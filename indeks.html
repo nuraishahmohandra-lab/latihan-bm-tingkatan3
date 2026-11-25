@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ekspedisi Bahasa Melayu Tingkatan 3 — Morfologi & Sintaksis</title>
+<style>
+:root{--navy:#183153;--blue:#2563eb;--pale:#eff6ff;--green:#15803d;--red:#b91c1c;--ink:#172033}
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.55}
+header{background:linear-gradient(135deg,#183153,#2563eb);color:white;padding:30px 18px;text-align:center}
+header h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.2rem)}header p{margin:0}
+main{max-width:900px;margin:22px auto;padding:0 14px 40px}
+.card{background:white;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 5px 18px #19365b12}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-weight:700;font-size:.95rem}input[type=text]{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;margin-top:5px;font:inherit}
+.pill{display:inline-block;background:#dbeafe;color:#1e40af;padding:4px 10px;border-radius:30px;font-size:.78rem;font-weight:bold}
+h2{color:var(--navy);margin:0 0 8px}.intro{color:#475569;margin:4px 0}
+.question{border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin:14px 0}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.qtext{font-weight:700;margin:0 0 10px}
+.option{display:block;padding:8px 10px;margin:6px 0;border:1px solid #e2e8f0;border-radius:9px;cursor:pointer}
+.option:hover{background:#f8fafc}.option input{margin-right:8px}
+button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;font-size:1rem;cursor:pointer}
+#submit{background:var(--blue);color:white;width:100%;margin-top:10px}#reset{background:#e2e8f0;color:#1e293b;margin-top:10px}
+#result{display:none}.score{font-size:2rem;font-weight:800;color:var(--blue)}
+.feedback{padding:12px;border-radius:10px;margin:10px 0;background:#f8fafc}
+.correct{border-left:5px solid var(--green)}.wrong{border-left:5px solid var(--red)}
+.explain{font-size:.92rem;color:#475569;margin-top:4px}
+footer{text-align:center;color:#64748b;font-size:.85rem;padding:20px}
+@media(max-width:600px){.details{grid-template-columns:1fr}.card{padding:15px}.qhead{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 Ekspedisi Bahasa Melayu Tingkatan 3</h1>
+  <p>Lembaran Kerja Interaktif: Morfologi &amp; Sintaksis</p>
+</header>
+<main>
+  <section class="card">
+    <h2>Maklumat Murid</h2>
+    <p class="intro">Isi maklumat berikut sebelum menjawab. Nama dan kelas adalah pilihan.</p>
+    <div class="details">
+      <label>Nama murid<input id="student" type="text" placeholder="Masukkan nama"></label>
+      <label>Kelas<input id="class" type="text" placeholder="Contoh: 3 Bestari"></label>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Arahan</h2>
+    <ul>
+      <li>Jawab semua 20 soalan objektif.</li>
+      <li>Pilih satu jawapan yang paling tepat bagi setiap soalan.</li>
+      <li>Soalan merangkumi aras rendah, sederhana dan tinggi.</li>
+      <li>Tekan <b>Hantar Jawapan</b> untuk menyemak markah dan melihat jawapan yang betul.</li>
+    </ul>
+    <p class="intro"><b>Jumlah markah:</b> 20 markah &nbsp; | &nbsp; <b>Masa cadangan:</b> 30–40 minit</p>
+  </section>
+  <div id="questions"></div>
+  <section class="card">
+    <button id="submit" onclick="gradeQuiz()">Hantar Jawapan &amp; Semak Markah</button>
+    <div id="result"></div>
+    <button id="reset" onclick="resetQuiz()" style="display:none">Cuba Semula</button>
+  </section>
+</main>
+<footer>Latihan Pengukuhan Bahasa Melayu Tingkatan 3 • Kelas PDPR</footer>
+<script>
+const qs = [
+{topic:"Morfologi",level:"Rendah",q:"Pilih kata nama am dalam ayat berikut: “Murid itu membaca buku di perpustakaan.”",o:["Murid","itu","membaca","di"],a:0,e:"“Murid” ialah kata nama am yang merujuk manusia secara umum."},
+{topic:"Morfologi",level:"Rendah",q:"Perkataan manakah ialah kata adjektif?",o:["berlari","cantik","sekolah","mereka"],a:1,e:"“Cantik” menerangkan sifat atau keadaan."},
+{topic:"Morfologi",level:"Rendah",q:"Apakah imbuhan awalan bagi perkataan “bermain”?",o:["-an","ber-","meN-","ke-...-an"],a:1,e:"Kata dasar “main” menerima awalan ber- menjadi “bermain”."},
+{topic:"Morfologi",level:"Rendah",q:"Pilih kata ganti nama diri pertama.",o:["dia","mereka","kami","awak"],a:2,e:"“Kami” ialah kata ganti nama diri pertama."},
+{topic:"Morfologi",level:"Sederhana",q:"Pilih perkataan yang menerima apitan dengan betul.",o:["keindahan","membaca","tertidur","pelari"],a:0,e:"“Keindahan” terbentuk daripada apitan ke-...-an pada kata dasar “indah”."},
+{topic:"Morfologi",level:"Sederhana",q:"Ayat yang manakah mengandungi kata kerja transitif?",o:["Adik tidur lena.","Mereka berbual di kantin.","Ibu memasak nasi.","Burung itu terbang tinggi."],a:2,e:"“Memasak” ialah kata kerja transitif kerana memerlukan objek, iaitu “nasi”."},
+{topic:"Morfologi",level:"Sederhana",q:"Pilih kata majmuk yang dieja dengan betul.",o:["aturcara","kerjasama","tanggungjawab","alatulis"],a:2,e:"“Tanggungjawab” ialah kata majmuk mantap yang dieja rapat."},
+{topic:"Morfologi",level:"Sederhana",q:"Perkataan “pelbagai” dalam ayat “Kedai itu menjual pelbagai jenis buah-buahan” tergolong dalam golongan kata…",o:["kata nama","kata kerja","kata bilangan","kata sendi nama"],a:2,e:"“Pelbagai” menunjukkan bilangan atau jumlah yang tidak tentu."},
+{topic:"Morfologi",level:"Tinggi",q:"Pilih ayat yang menggunakan imbuhan meN- dengan tepat.",o:["Ibu mengsap lantai.","Adik mensapu halaman.","Mereka mengutip sampah.","Dia mentulis surat."],a:2,e:"Bentuk yang betul ialah “mengutip”. Kata dasar “kutip” menerima awalan meng-."},
+{topic:"Morfologi",level:"Tinggi",q:"Dalam ayat “Kejayaan pasukan itu membanggakan seluruh warga sekolah”, perkataan “membanggakan” terbentuk melalui proses…",o:["penggandaan","pengimbuhan","pemajmukan","akronim"],a:1,e:"Kata dasar “bangga” menerima imbuhan meN-...-kan."},
+{topic:"Sintaksis",level:"Rendah",q:"Pilih ayat penyata.",o:["Bilakah kamu tiba?","Tolong tutup pintu itu.","Wah, cantiknya lukisan ini!","Kakak sedang membaca buku."],a:3,e:"Ayat penyata memberikan keterangan atau menyatakan sesuatu."},
+{topic:"Sintaksis",level:"Rendah",q:"Yang manakah subjek bagi ayat “Pasukan bola jaring sekolah itu memenangi pertandingan”?",o:["memenangi pertandingan","Pasukan bola jaring sekolah itu","pertandingan","sekolah itu"],a:1,e:"Subjek ialah perkara atau pelaku yang diperkatakan dalam ayat."},
+{topic:"Sintaksis",level:"Rendah",q:"Pilih ayat tanya yang betul.",o:["Kamu tinggal di manakah?","Kamu tinggal di mana.","Di manakah kamu tinggal.","Kamu di manakah tinggal?"],a:0,e:"Ayat tanya yang gramatis ialah “Kamu tinggal di manakah?”"},
+{topic:"Sintaksis",level:"Sederhana",q:"Pilih ayat majmuk gabungan.",o:["Adik menangis kerana terjatuh.","Kakak menyanyi sambil menari.","Buku yang dibeli itu mahal.","Apabila hujan, kami berteduh."],a:1,e:"Ayat ini menggabungkan dua ayat melalui kata hubung “sambil”."},
+{topic:"Sintaksis",level:"Sederhana",q:"Pilih ayat pasif yang betul.",o:["Ali menendang bola itu.","Bola itu ditendang oleh Ali.","Ali sedang menendang bola.","Ali telah menendang bola itu."],a:1,e:"Ayat pasif bagi kata ganti nama diri ketiga menggunakan bentuk “ditendang oleh Ali”."},
+{topic:"Sintaksis",level:"Sederhana",q:"Pilih ayat yang mempunyai pola Frasa Nama + Frasa Adjektif (FN + FA).",o:["Ibu guru sekolah.","Rumah itu sangat besar.","Mereka ke perpustakaan.","Ayah membaca surat khabar."],a:1,e:"“Rumah itu” ialah frasa nama dan “sangat besar” ialah frasa adjektif."},
+{topic:"Sintaksis",level:"Sederhana",q:"Pilih ayat yang menggunakan kata hubung pancangan keterangan sebab.",o:["Dia rajin tetapi adiknya malas.","Kami pulang apabila hujan reda.","Murid itu tidak hadir kerana demam.","Saya tahu bahawa dia telah pulang."],a:2,e:"Kata hubung “kerana” menerangkan sebab."},
+{topic:"Sintaksis",level:"Tinggi",q:"Pilih ayat yang paling gramatis.",o:["Para-para peserta diminta berkumpul.","Semua murid-murid hadir awal.","Para peserta diminta berkumpul.","Setengah orang murid membawa bekalan."],a:2,e:"“Para peserta” sudah membawa maksud jamak; penggandaan tidak diperlukan."},
+{topic:"Sintaksis",level:"Tinggi",q:"Pilih ayat yang mengalami kesalahan penggunaan kata sendi nama.",o:["Hadiah itu daripada ibu.","Mesyuarat bermula pada pukul 8.00 pagi.","Buku itu dibeli oleh kakak.","Dia berasal daripada Kota Bharu."],a:3,e:"Bagi tempat atau asal tempat, kata sendi nama yang tepat ialah “dari”: “Dia berasal dari Kota Bharu.”"},
+{topic:"Sintaksis",level:"Tinggi",q:"Ayat “Walaupun penat, Farah tetap menyiapkan tugasan yang diberikan oleh gurunya” ialah ayat majmuk…",o:["gabungan","pancangan relatif sahaja","pancangan keterangan dan relatif","campuran yang mengandungi dua ayat tunggal sahaja"],a:2,e:"“Walaupun penat” ialah keterangan konsesif, manakala “yang diberikan oleh gurunya” ialah klausa relatif."}
+];
+const root=document.getElementById('questions');
+qs.forEach((x,i)=>{
+ const box=document.createElement('section');box.className='card question';box.id='q'+i;
+ box.innerHTML=`<div class="qhead"><b>Soalan ${i+1}</b><span class="pill">${x.topic} • Aras ${x.level}</span></div><p class="qtext">${x.q}</p>`+
+ x.o.map((v,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}">${String.fromCharCode(65+j)}. ${v}</label>`).join('');
+ root.appendChild(box);
+});
+function gradeQuiz(){
+ let score=0,answered=0,details='';
+ qs.forEach((x,i)=>{
+  const chosen=document.querySelector(`input[name="q${i}"]:checked`);
+  if(chosen)answered++;
+  const ok=chosen && Number(chosen.value)===x.a;
+  if(ok)score++;
+  const box=document.getElementById('q'+i);
+  box.querySelectorAll('input').forEach(el=>el.disabled=true);
+  details+=`<div class="feedback ${ok?'correct':'wrong'}"><b>Soalan ${i+1}: ${ok?'Betul':'Belum tepat'}</b><br>Jawapan: <b>${String.fromCharCode(65+x.a)}. ${x.o[x.a]}</b><div class="explain">${x.e}</div></div>`;
+ });
+ const name=document.getElementById('student').value.trim();
+ const cls=document.getElementById('class').value.trim();
+ const pct=Math.round(score/qs.length*100);
+ let band=pct>=80?'Cemerlang':pct>=50?'Memuaskan':'Perlu latihan tambahan';
+ const r=document.getElementById('result');r.style.display='block';
+ r.innerHTML=`<hr><h2>Keputusan Latihan</h2><p>${name?'<b>Nama:</b> '+escapeHtml(name)+' &nbsp;':''}${cls?'<b>Kelas:</b> '+escapeHtml(cls):''}</p><div class="score">${score} / ${qs.length}</div><p><b>Peratus:</b> ${pct}% &nbsp; | &nbsp; <b>Tahap:</b> ${band}</p><p>Anda menjawab ${answered} daripada ${qs.length} soalan. Semak ulasan bagi setiap soalan di bawah.</p><h3>Semakan Jawapan</h3>${details}`;
+ document.getElementById('submit').disabled=true;document.getElementById('reset').style.display='inline-block';
+ r.scrollIntoView({behavior:'smooth'});
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function resetQuiz(){location.reload();}
+</script>
+</body>
+</html>
